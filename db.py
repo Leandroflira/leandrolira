@@ -115,4 +115,92 @@ def deletarProduto(conbd, nome_produto):
         
     finally:
         conbd.close()
+
+def encontrarcliente(conbd,):
+    while true:
+        active = "off"
+        mycursor = conbd.cursor()
+        cliente = input("Digite o nome do cliente :")
+        sql = "select*from cliente where Nome = %s"
+        val = (cliente,)
+        mycursor.execute(sql,val)
+        resultados = mycursor
+        for linha in resultados:
+            if cliente in linha[1]:
+                id_cliente = linha[0]
+                active = "on"
+
+        if active == "off":
+            inputclientes(conbd)
+        if active == "on":
+            break
+    return id-cliente
+
+
+def comprarproduto(conbd,):
+    res = 0
+    mycursor = conbd.cursor()
+    produto = input("Digite o qual produto: ")
+    sql = "select*frfron produtos"
+    mycursor.execute(sql,)
+    resultados = mycursor
+    for linha in resultados:
+        if produto in linha[1]:
+            print("|id:",linha[0],"|nome:",linha[1],"|descrição:",linha[2],"|preço:",linha[3])
+    id_produto = int(input("Para confirmar digite o id do produto: "))
+    sql2 ="select*from produtos where id_produto = %s"
+    val2 = (id_produto,)
+    mycursor.execute(sql2,val2,)
+    resultados = mycursor
+    for linha in resultados:
+        preço = linha[3]
+    quantidade = int(input("Quantidade: "))
+    pg = input("Digite o método de pagamento: ")
+    valor = preco = quantidade
+    res = valor
+    print("Compra realizada! Total :",res)
+    avaliacao = int(input("De 1 a 5 o quão satisfeito está com o produto :"))
+    coment = input("Digite seu comentário sobre o produto: ")
+
+    return id_produto, res, quantidade, pg, preco, avaliacao, coment
         
+def criarpedido(conbd,):
+    data = date.today()
+    mycursor = condb.mycursor()
+    id_cliente = encontrarcliente(conbd,)
+    dentro = comprarproduto(conbd,)
+    id_produto = dentro[0]
+    valor =  dentro[1]
+    quantidade = dentro[2]
+    pg = dentro[3]
+    avaliacao = dentro[4]
+    coment = dentro[5]
+    sql = "insert into pedidos(data_pedido, id_cliente, total) values (%s, %s, %s)"
+    val = (data, id_cliente, valor,)
+    mycursor.execute(sql,val)
+    id_pedido = mycursor.lastrowid
+    sql1 = "insert into detalhespedido(ID_pedido, ID_produto, Quantidade) values (%s, %s, %s)"
+    val1 = (id_pedido, id_produto, quantidade)
+    mycursor.execute(sql1, val1)
+    sql2 = "insert into vendas(data, id_cliente, metodopagamento, total) values (%s, %s, %s, %s)"
+    val2 = (data, id_cliente,pg, valor)
+    mycursor.execute(sql2, val2)
+    id_venda = mycursor.lastrowid
+    sql3 = "insert into pagamentos(ID_venda, data, valor) values (%s, %s, %s)"
+    val3 = (id_venda, data, valor)
+    mycursor.execute(sql3, val3)
+    sql4 = "insert into comentariosavaliacoes(ID_produto, id_cliente, comentario, avaliacao, data) values (%s, %s, %s, %s, %s)"
+    val4 = (id_produto, id_cliente, comentario, avaliacao, data)
+    mycursor.execute(sql4, val4)
+    print("compra realizada com sucesso")
+    conbd.commit()
+    mycursor.close()
+
+def inputclientes(conbd,):
+    nome = input("Digite o nome do cliente: ")
+    sobrenome = input("Digite o sobrenome do cliente: ")
+    endereco = input("Digite o endereço do cliente: ")
+    cidade = input("Digite a cidade do cliente: ")
+    codigopostal = int(input("Digite o código postal do cliente"))
+    cadastrarcliente(conbd, nome, sobrenome, endereco, cidade, codigopostal) 
+    
